@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 // @mui
 import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { useAuthContext } from '../../../context/Auth';
 // components
 import Iconify from '../../../components/iconify';
 
@@ -12,13 +13,23 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleClick = () => {
-    navigate('/dashboard', { replace: true });
-  };
+  const { setAuthState } = useAuthContext();
 
   return (
-    <>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const email = formData.get('email');
+        const password = formData.get('email');
+        const staySignedIn = formData.get('remember');
+        if (email && password) {
+          setAuthState(staySignedIn);
+          navigate('/dashboard', { replace: true });
+        }
+      }}
+    >
       <Stack spacing={3}>
         <TextField name="email" label="Email address" />
 
@@ -45,9 +56,9 @@ export default function LoginForm() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
+      <LoadingButton fullWidth size="large" type="submit" variant="contained">
         Login
       </LoadingButton>
-    </>
+    </form>
   );
 }
